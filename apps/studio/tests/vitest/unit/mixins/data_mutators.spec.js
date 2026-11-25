@@ -56,6 +56,17 @@ describe("cellFormatter", () => {
     expect(mutators.methods.cellTooltip(null, badInput)).toBe('8640000000000005')
   })
 
+  it('tooltip reads unixtime in seconds or milliseconds', () => {
+    const cell = (value) => ({
+      getValue: () => value,
+      getElement: () => document.createElement('a'),
+      getColumn: () => ({ getDefinition: () => ({ formatterParams: { fk: false, isPK: false } }) }),
+    })
+
+    expect(mutators.methods.cellTooltip(null, cell(1745019116))).toBe('1745019116 (2025-04-18T23:31:56.000Z in unixtime)')
+    expect(mutators.methods.cellTooltip(null, cell('1745019116000'))).toBe('1745019116000 (2025-04-18T23:31:56.000Z in unixtime)')
+  })
+
   it('render tooltip with escaped html', () => {
     const formatted = buildFormatterWithTooltip('<a>ne-er do-well</a>', '<a>ne-er do-well</a>', 'launch')
 
