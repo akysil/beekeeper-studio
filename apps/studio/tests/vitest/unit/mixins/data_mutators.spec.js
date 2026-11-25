@@ -51,9 +51,22 @@ describe("cellFormatter", () => {
       getColumn: () => ({ getDefinition: () => params }),
     }
 
-    expect(mutators.methods.cellTooltip(null, input)).toBe('8640000000000000 (+275760-09-13T00:00:00.000Z in unixtime)')
+    expect(mutators.methods.cellTooltip(null, input)).toBe('8640000000000000 (+275760-09-13 00:00:00.000Z in unixtime)')
     expect(mutators.methods.cellTooltip(null, inputPK)).toBe('8640000000000000')
     expect(mutators.methods.cellTooltip(null, badInput)).toBe('8640000000000005')
+  })
+
+  it('tooltip reads unixtime in seconds or milliseconds', () => {
+    const cell = (value) => ({
+      getValue: () => value,
+      getElement: () => document.createElement('a'),
+      getColumn: () => ({ getDefinition: () => ({ formatterParams: { fk: false, isPK: false } }) }),
+    })
+
+    expect(mutators.methods.cellTooltip(null, cell(1745019116))).toBe('1745019116 (2025-04-18 23:31:56.000Z in unixtime seconds, 1970-01-21 04:43:39.116Z in milliseconds)')
+    expect(mutators.methods.cellTooltip(null, cell('10000000000'))).toBe('10000000000 (2286-11-20 17:46:40.000Z in unixtime seconds, 1970-04-26 17:46:40.000Z in milliseconds)')
+    expect(mutators.methods.cellTooltip(null, cell('1745019116000'))).toBe('1745019116000 (2025-04-18 23:31:56.000Z in unixtime)')
+    expect(mutators.methods.cellTooltip(null, cell(86400001))).toBe('86400001 (1970-01-02 00:00:00.001Z in unixtime)')
   })
 
   it('render tooltip with escaped html', () => {

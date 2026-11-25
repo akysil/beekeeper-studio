@@ -58,7 +58,14 @@ export default {
         _.isInteger(Number(cellValue))
       ) {
         try {
-          cellValue += ` (${new Date(Number(cellValue)).toISOString()} in unixtime)`
+          const unixTime = Number(cellValue)
+          const toDateString = (millis: number) => new Date(millis).toISOString().replace('T', ' ')
+          // 10 and 11 digit values are usually seconds, but can also be milliseconds, so show both
+          if (unixTime >= 1e9 && unixTime < 1e11) {
+            cellValue += ` (${toDateString(unixTime * 1000)} in unixtime seconds, ${toDateString(unixTime)} in milliseconds)`
+          } else {
+            cellValue += ` (${toDateString(unixTime)} in unixtime)`
+          }
         } catch (e) {
           console.error(`${cellValue} cannot be converted to a date`)
         }
